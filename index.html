@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VitalAI — Personal Health & Calorie Tracker</title>
+
+  <!-- Bootstrap 5 (CDN) -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  <!-- Google Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Our custom styles -->
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <!-- navbar -->
+    <nav class="navbar app-navbar sticky-top">
+      <div class="container">
+        <a class="brand navbar-brand" href="#">
+          <span class="brand-dot"></span>
+          Vital<span class="brand-accent">AI</span>
+        </a>
+        <button
+          id="resetProfileBtn"
+          class="btn btn-outline-light-soft d-none"
+          type="button"
+        >
+          Reset Profile
+        </button>
+      </div>
+    </nav>
+
+    <main class="container py-4 py-md-5">
+      <!-- screen -->
+      <section id="setupScreen">
+        <div class="text-center mb-4">
+          <span class="eyebrow">Get started</span>
+          <h1 class="mt-3 fw-bold">Tell us about yourself</h1>
+          <p class="text-muted-soft">
+            We'll calculate a smart calorie & weight plan just for you.
+          </p>
+        </div>
+
+        <div class="row justify-content-center">
+          <div class="col-lg-8">
+            <div class="setup-card p-4 p-md-5">
+              <form id="setupForm" class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label">Age</label>
+                  <input type="number" class="form-control" id="age" min="10" max="100" required />
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Gender</label>
+                  <select class="form-select" id="gender" required>
+                    <option value="">Choose…</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Height (cm)</label>
+                  <input type="number" class="form-control" id="height" min="100" max="250" required />
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Current weight (kg)</label>
+                  <input type="number" class="form-control" id="weight" min="30" max="250" step="0.1" required />
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Plan duration (days)</label>
+                  <input type="number" class="form-control" id="duration" min="7" max="365" value="30" required />
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Daily water goal (ml)</label>
+                  <input type="number" class="form-control" id="water" min="500" max="6000" step="100" value="2000" required />
+                </div>
+
+                <div class="col-12 mt-4">
+                  <button type="submit" class="btn btn-primary-soft w-100">
+                    Build my smart plan
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- dashboard -->
+      <section id="dashboardScreen" class="d-none">
+        <!-- Tabs -->
+        <div class="d-flex justify-content-center mb-4">
+          <ul class="nav custom-tabs" role="tablist">
+            <li class="nav-item">
+              <button class="nav-link active" data-tab="dashboard" type="button">
+                Today
+              </button>
+            </li>
+            <li class="nav-item">
+              <button class="nav-link" data-tab="history" type="button">
+                History <span class="tab-count" id="historyCount">0</span>
+              </button>
+            </li>
+          </ul>
+        </div>
+
+        <!-- dashboard tap-->
+        <div id="tabDashboard">
+          <!-- AI prediction banner -->
+          <div class="prediction-banner mb-4">
+            <div class="prediction-icon">AI</div>
+            <div>
+              <div class="prediction-label">Smart Plan</div>
+              <p class="prediction-text mb-0" id="predictionText"></p>
+            </div>
+          </div>
+
+          <!-- Stat cards -->
+          <div class="row g-3 mb-4">
+            <div class="col-md-3 col-6">
+              <div class="stat-card stat-card-accent">
+                <span class="stat-label">Target weight</span>
+                <span class="stat-value" id="statTargetWeight">–</span>
+                <span class="stat-unit">kg</span>
+              </div>
+            </div>
+            <div class="col-md-3 col-6">
+              <div class="stat-card">
+                <span class="stat-label">Calorie target</span>
+                <span class="stat-value" id="statCalorieGoal">–</span>
+                <span class="stat-unit">kcal / day</span>
+              </div>
+            </div>
+            <div class="col-md-3 col-6">
+              <div class="stat-card">
+                <span class="stat-label">Water goal</span>
+                <span class="stat-value" id="statWater">–</span>
+                <span class="stat-unit">ml</span>
+              </div>
+            </div>
+            <div class="col-md-3 col-6">
+              <div class="stat-card">
+                <span class="stat-label">Eaten today</span>
+                <span class="stat-value" id="statEaten">0</span>
+                <span class="stat-unit">kcal</span>
+                <div class="progress-soft mt-2">
+                  <div class="progress-bar" id="eatenProgress" style="width:0%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Meal logger + list -->
+          <div class="row g-3">
+            <div class="col-md-5">
+              <div class="panel-card p-4">
+                <h5 class="fw-bold mb-3">Log a meal</h5>
+                <form id="foodForm" class="d-flex flex-column gap-3">
+                  <input type="text" class="form-control" id="foodName" placeholder="e.g. Banana, Pizza slice" required />
+                  <button type="submit" class="btn btn-primary-soft">Add food</button>
+                </form>
+                <p class="hint mt-3 mb-0">
+                  Tip: type any food — we look it up automatically.
+                  Unknown items get an <strong>estimated</strong> value.
+                </p>
+              </div>
+            </div>
+
+            <div class="col-md-7">
+              <div class="panel-card p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <h5 class="fw-bold mb-0">Today's food</h5>
+                  <span class="badge-soft" id="foodCount">0 items</span>
+                </div>
+                <div id="foodList" class="food-list"></div>
+                <div id="emptyFoods" class="empty-state">
+                  <span class="text-muted-soft">No food logged yet. Start adding meals!</span>
+                </div>
+                <button id="endDayBtn" class="btn btn-end-day w-100 mt-3" disabled>
+                  End day & evaluate
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- history tab-->
+        <div id="tabHistory" class="d-none">
+          <div class="panel-card p-4">
+            <h5 class="fw-bold mb-3">Your daily history</h5>
+            <ul id="historyList" class="timeline"></ul>
+            <div id="emptyHistory" class="empty-state">
+              <span class="text-muted-soft">No days logged yet. Finish a day to see it here.</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- summary model -->
+    <div id="summaryModal" class="modal-backdrop-custom d-none">
+      <div class="summary-card">
+        <div class="summary-icon" id="summaryIcon">✓</div>
+        <h3 class="fw-bold mb-2" id="summaryTitle">Day complete!</h3>
+        <p class="text-muted-soft mb-4" id="summaryMessage"></p>
+        <div class="summary-stats mb-4">
+          <div><strong id="sumTarget">0</strong><br /><small class="text-muted-soft">Target</small></div>
+          <div><strong id="sumEaten">0</strong><br /><small class="text-muted-soft">Eaten</small></div>
+          <div><strong id="sumDiff">0</strong><br /><small class="text-muted-soft">Diff</small></div>
+        </div>
+        <button id="closeSummaryBtn" class="btn btn-primary-soft w-100">
+          Start a new day
+        </button>
+      </div>
+    </div>
+
+    <!--toast -->
+    <div id="toast" class="toast-custom d-none"></div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
