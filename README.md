@@ -43,8 +43,3 @@ Because VitalAI requires no backend server environments or tracking configuratio
 
 ### Prerequisites
 You only need a modern web browser (Google Chrome, Mozilla Firefox, Microsoft Edge, or Safari).
-
-
-1. Clone this repository or download the source code files to your local disk:
-   ```bash
-   git clone [https://github.com/](https://github.com/)[your-username]/vitalai-project.git
